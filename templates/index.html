@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MovieFlix — Personalized Movie Recommendations</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">🎬 Movie<span>Flix</span></div>
+    <p class="tagline">Rate a few films you know — get picks tuned to your taste.</p>
+  </header>
+
+  <main>
+    <!-- Step 1: build a taste profile -->
+    <section class="panel">
+      <div class="panel-head">
+        <h2><span class="step">1</span> Rate movies you've seen</h2>
+        <div class="search-wrap">
+          <input id="search" type="text" placeholder="Search any movie…" autocomplete="off" />
+          <div id="search-results" class="search-results hidden"></div>
+        </div>
+      </div>
+
+      <div id="rated-strip" class="rated-strip hidden">
+        <h3>Your ratings <span id="rated-count" class="pill">0</span></h3>
+        <div id="rated-list" class="rated-list"></div>
+      </div>
+
+      <h3 class="muted">Popular picks to get you started</h3>
+      <div id="seed-grid" class="grid">
+        {% for m in seed_movies %}
+        <div class="card" data-id="{{ m.movieId }}" data-title="{{ m.title }}{% if m.year %} ({{ m.year }}){% endif %}">
+          <div class="poster" style="--h: {{ m.movieId % 360 }}">
+            <span>{{ m.title[:2]|upper }}</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">{{ m.title }}</div>
+            <div class="card-meta">{{ m.year or '' }} · ⭐ {{ m.avg_rating }}</div>
+            <div class="stars" data-id="{{ m.movieId }}">
+              {% for s in range(1,6) %}<button class="star" data-val="{{ s }}">★</button>{% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Step 2: tune + generate -->
+    <section class="panel">
+      <h2><span class="step">2</span> Tune your recommendations</h2>
+      <div class="controls">
+        <div class="control">
+          <label>Personalization mix</label>
+          <input id="alpha" type="range" min="0" max="100" value="50" />
+          <div class="range-labels">
+            <span>Similar movies<br><small>content</small></span>
+            <span>Similar users<br><small>collaborative</small></span>
+          </div>
+        </div>
+        <div class="control">
+          <label for="genre">Limit to genre (optional)</label>
+          <select id="genre">
+            <option value="">Any genre</option>
+            {% for g in genres %}<option value="{{ g }}">{{ g }}</option>{% endfor %}
+          </select>
+        </div>
+        <button id="recommend-btn" class="cta">Get my recommendations →</button>
+      </div>
+    </section>
+
+    <!-- Step 3: results -->
+    <section id="results-section" class="panel hidden">
+      <h2><span class="step">3</span> Your personalized picks</h2>
+      <div id="results" class="grid results"></div>
+    </section>
+  </main>
+
+  <footer>
+    Built with a hybrid (content-based + collaborative-filtering) engine on the
+    MovieLens dataset.
+  </footer>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
