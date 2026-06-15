@@ -73,7 +73,7 @@ class RecommenderEngine:
         content_profile = self.content.build_profile(ratings)
         if content_profile is None:
             # No known movies rated -> fall back to popularity.
-            return self.popular_movies(n=top_n, min_ratings=50)
+            return self.popular_movies(n=top_n, min_ratings=min_ratings)
 
         content_scores = self.content.score(content_profile)
         collab_profile = self.collab.build_profile(ratings)
